@@ -1,0 +1,265 @@
+# =============================================================================
+# Doxyfile - Maximum Extraction Configuration
+# =============================================================================
+# Optimized to extract as much design information as possible
+# with minimal code documentation effort.
+# =============================================================================
+
+#---------------------------------------------------------------------------
+# Project Information
+#---------------------------------------------------------------------------
+
+PROJECT_NAME           = "MyProject"
+PROJECT_NUMBER         = "1.0.0"
+PROJECT_BRIEF          = "Project description goes here"
+PROJECT_LOGO           = 
+OUTPUT_DIRECTORY       = docs
+
+#---------------------------------------------------------------------------
+# Build Configuration - EXTRACT EVERYTHING
+#---------------------------------------------------------------------------
+
+# Extract documentation even without comments
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_PRIV_VIRTUAL   = YES
+EXTRACT_PACKAGE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_LOCAL_METHODS  = YES
+EXTRACT_ANON_NSPACES   = YES
+
+# Include undocumented members
+HIDE_UNDOC_MEMBERS     = NO
+HIDE_UNDOC_CLASSES     = NO
+HIDE_FRIEND_COMPOUNDS  = NO
+
+# Show all internal details
+INTERNAL_DOCS          = YES
+SHOW_HEADERFILE        = YES
+SHOW_INCLUDE_FILES     = YES
+SHOW_GROUPED_MEMB_INC  = YES
+SHOW_USED_FILES        = YES
+SHOW_FILES             = YES
+SHOW_NAMESPACES        = YES
+
+# Force documentation of all entities
+FORCE_LOCAL_INCLUDES   = YES
+
+#---------------------------------------------------------------------------
+# Input Configuration
+#---------------------------------------------------------------------------
+
+INPUT                  = ./include ./src
+INPUT_ENCODING         = UTF-8
+FILE_PATTERNS          = *.h *.hpp *.hxx *.cc *.cpp *.cxx *.c
+RECURSIVE              = YES
+EXCLUDE                = ./build ./docs ./test ./tests
+EXCLUDE_PATTERNS       = */test/* */tests/* *_test.cc *_test.cpp
+EXCLUDE_SYMBOLS        = 
+
+# Also read source files for better cross-referencing
+EXAMPLE_PATH           = ./examples
+EXAMPLE_PATTERNS       = *
+EXAMPLE_RECURSIVE      = YES
+IMAGE_PATH             = ./docs/images ./docs/uml
+
+#---------------------------------------------------------------------------
+# Source Browser - FULL CODE BROWSING
+#---------------------------------------------------------------------------
+
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+STRIP_CODE_COMMENTS    = NO
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+REFERENCES_LINK_SOURCE = YES
+VERBATIM_HEADERS       = YES
+
+#---------------------------------------------------------------------------
+# Cross-Reference & Inheritance
+#---------------------------------------------------------------------------
+
+ALPHABETICAL_INDEX     = YES
+COLS_IN_ALPHA_INDEX    = 5
+
+# Show all relationships
+COLLABORATION_GRAPH    = YES
+GROUP_GRAPHS           = YES
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+GRAPHICAL_HIERARCHY    = YES
+DIRECTORY_GRAPH        = YES
+
+#---------------------------------------------------------------------------
+# HTML Output
+#---------------------------------------------------------------------------
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+HTML_FILE_EXTENSION    = .html
+HTML_COLORSTYLE        = LIGHT
+HTML_COLORSTYLE_HUE    = 220
+HTML_COLORSTYLE_SAT    = 100
+HTML_COLORSTYLE_GAMMA  = 80
+HTML_TIMESTAMP         = YES
+HTML_DYNAMIC_MENUS     = YES
+HTML_DYNAMIC_SECTIONS  = YES
+
+# Navigation
+GENERATE_TREEVIEW      = YES
+TREEVIEW_WIDTH         = 300
+DISABLE_INDEX          = NO
+FULL_SIDEBAR           = NO
+
+# Search
+SEARCHENGINE           = YES
+SERVER_BASED_SEARCH    = NO
+
+#---------------------------------------------------------------------------
+# XML Output - FOR PLM IMPORT (Polarion, PTC, DOORS)
+#---------------------------------------------------------------------------
+
+GENERATE_XML           = YES
+XML_OUTPUT             = xml
+XML_PROGRAMLISTING     = YES
+XML_NS_MEMB_FILE_SCOPE = YES
+
+#---------------------------------------------------------------------------
+# LaTeX/PDF Output (Optional)
+#---------------------------------------------------------------------------
+
+GENERATE_LATEX         = NO
+# Set to YES if you need PDF output
+# LATEX_OUTPUT         = latex
+# PDF_HYPERLINKS       = YES
+# USE_PDFLATEX         = YES
+
+#---------------------------------------------------------------------------
+# Other Outputs
+#---------------------------------------------------------------------------
+
+GENERATE_RTF           = NO
+GENERATE_MAN           = NO
+GENERATE_DOCBOOK       = NO
+GENERATE_AUTOGEN_DEF   = NO
+GENERATE_PERLMOD       = NO
+
+#---------------------------------------------------------------------------
+# Graphs & Diagrams (Graphviz) - MAXIMUM DIAGRAMS
+#---------------------------------------------------------------------------
+
+HAVE_DOT               = YES
+DOT_NUM_THREADS        = 0
+DOT_FONTNAME           = Helvetica
+DOT_FONTSIZE           = 10
+DOT_FONTPATH           = 
+
+# Class diagrams
+CLASS_DIAGRAMS         = YES
+CLASS_GRAPH            = YES
+UML_LOOK               = YES
+UML_LIMIT_NUM_FIELDS   = 50
+DOT_UML_DETAILS        = YES
+TEMPLATE_RELATIONS     = YES
+HIDE_UNDOC_RELATIONS   = NO
+
+# Collaboration diagrams (shows object relationships)
+COLLABORATION_GRAPH    = YES
+MAX_DOT_GRAPH_DEPTH    = 0
+
+# Call graphs (who calls what)
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+
+# Include dependency graphs
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+
+# Directory dependency graphs
+DIRECTORY_GRAPH        = YES
+
+# Inheritance diagrams
+GRAPHICAL_HIERARCHY    = YES
+
+# Graph settings
+DOT_IMAGE_FORMAT       = svg
+INTERACTIVE_SVG        = YES
+DOT_PATH               = 
+DOTFILE_DIRS           = 
+MSCFILE_DIRS           = 
+DIAFILE_DIRS           = 
+DOT_GRAPH_MAX_NODES    = 100
+MAX_DOT_GRAPH_DEPTH    = 0
+DOT_TRANSPARENT        = YES
+DOT_MULTI_TARGETS      = YES
+GENERATE_LEGEND        = YES
+DOT_CLEANUP            = YES
+
+#---------------------------------------------------------------------------
+# PlantUML Integration
+#---------------------------------------------------------------------------
+
+PLANTUML_JAR_PATH      = /opt/plantuml/plantuml.jar
+PLANTUML_CFG_FILE      = 
+PLANTUML_INCLUDE_PATH  = ./docs/uml
+
+#---------------------------------------------------------------------------
+# Preprocessing
+#---------------------------------------------------------------------------
+
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = NO
+SEARCH_INCLUDES        = YES
+INCLUDE_PATH           = ./include
+INCLUDE_FILE_PATTERNS  = 
+PREDEFINED             = 
+EXPAND_AS_DEFINED      = 
+SKIP_FUNCTION_MACROS   = NO
+
+#---------------------------------------------------------------------------
+# External References
+#---------------------------------------------------------------------------
+
+TAGFILES               = 
+GENERATE_TAGFILE       = docs/project.tag
+ALLEXTERNALS           = NO
+EXTERNAL_GROUPS        = YES
+EXTERNAL_PAGES         = YES
+
+#---------------------------------------------------------------------------
+# Warnings & Errors
+#---------------------------------------------------------------------------
+
+QUIET                  = NO
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = NO
+WARN_AS_ERROR          = NO
+WARN_FORMAT            = "$file:$line: $text"
+WARN_LOGFILE           = docs/doxygen_warnings.log
+
+#---------------------------------------------------------------------------
+# Markdown & Aliases
+#---------------------------------------------------------------------------
+
+MARKDOWN_SUPPORT       = YES
+TOC_INCLUDE_HEADINGS   = 5
+AUTOLINK_SUPPORT       = YES
+BUILTIN_STL_SUPPORT    = YES
+CPP_CLI_SUPPORT        = NO
+IDL_PROPERTY_SUPPORT   = YES
+SIP_SUPPORT            = NO
+
+# Custom aliases for requirements traceability
+ALIASES                = "req{1}=\xrefitem req \"Requirement\" \"Requirements List\" \1" \
+                         "test{1}=\xrefitem test \"Test Case\" \"Test Cases\" \1" \
+                         "design{1}=\xrefitem design \"Design Element\" \"Design Elements\" \1" \
+                         "safety{1}=\xrefitem safety \"Safety Requirement\" \"Safety Requirements\" \1" \
+                         "thread_safe=\par Thread Safety:\n" \
+                         "complexity{1}=\par Complexity:\n \1" \
+                         "since{1}=\par Since:\n \1" \
+                         "pre=\par Precondition:\n" \
+                         "post=\par Postcondition:\n"

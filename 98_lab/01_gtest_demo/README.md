@@ -18,19 +18,6 @@ A Docker-based C++17 unit testing environment with Google Test and Google Mock.
 ./shell.sh
 ```
 
-## Docker compose
-
-```
-# Build and run all tests
-docker-compose run --rm test
-
-# Run with coverage report
-docker-compose run --rm coverage
-
-# Interactive shell
-docker-compose run --rm gtest bash
-```
-
 ## Scripts
 
 | Script | Description |

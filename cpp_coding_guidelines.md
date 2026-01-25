@@ -1,6 +1,6 @@
 # C++ Coding Guidelines
 
-This document defines the coding standards for our project. These guidelines are based on the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html) and apply to all C++ code in our codebase.
+This document defines the coding standards for the reference project. These guidelines are based on the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html).
 
 ---
 

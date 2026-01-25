@@ -3,7 +3,6 @@
         // ========== Essential (Install These First) ==========
         "ms-vscode.cpptools", // C/C++ IntelliSense, debugging, code navigation
         "ms-vscode.cmake-tools", // Build, configure, run CMake projects
-        "twxs.cmake", // CMakeLists.txt syntax highlighting
         "ms-vscode.makefile-tools", // Makefile support (IntelliSense, build, debug)
         "llvm-vs-code-extensions.vscode-clangd", // Better IntelliSense (faster, more accurate)
         "ms-vscode.hexeditor", // Hex editor for binary files
