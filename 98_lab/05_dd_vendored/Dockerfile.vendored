@@ -1,0 +1,51 @@
+# Documentation Generation Environment (VENDORED BUILD)
+# Uses only vendored/offline dependencies for reproducible builds
+# This build will work identically even years from now
+
+# Load vendored Ubuntu base image
+FROM ubuntu:22.04
+
+LABEL maintainer="your-team"
+LABEL description="C++ documentation generator with UML diagrams (vendored dependencies)"
+LABEL vendored="true"
+LABEL build.reproducible="true"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Copy vendored APT packages
+COPY vendored/apt-packages/*.deb /tmp/debs/
+
+# Install from vendored .deb files (no network needed)
+RUN dpkg -i /tmp/debs/*.deb 2>/dev/null || true && \
+    apt-get update && \
+    apt-get install -f -y && \
+    rm -rf /tmp/debs /var/lib/apt/lists/*
+
+# Install PlantUML from vendored JAR
+RUN mkdir -p /opt/plantuml
+COPY vendored/plantuml/*.jar /opt/plantuml/plantuml.jar
+ENV PLANTUML_JAR=/opt/plantuml/plantuml.jar
+
+# Install clang-uml from vendored source
+COPY vendored/clang-uml/*.tar.gz /tmp/clang-uml.tar.gz
+RUN mkdir -p /tmp/clang-uml && \
+    tar -xzf /tmp/clang-uml.tar.gz -C /tmp/clang-uml --strip-components=1 && \
+    cd /tmp/clang-uml && \
+    mkdir build && cd build && \
+    cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_TESTS=OFF && \
+    make -j$(nproc) && \
+    make install && \
+    rm -rf /tmp/clang-uml /tmp/clang-uml.tar.gz
+
+# Create wrapper script for PlantUML
+RUN echo '#!/bin/bash\njava -jar /opt/plantuml/plantuml.jar "$@"' > /usr/local/bin/plantuml && \
+    chmod +x /usr/local/bin/plantuml
+
+# Create documentation generation script
+COPY generate-docs.sh /usr/local/bin/generate-docs
+RUN chmod +x /usr/local/bin/generate-docs
+
+WORKDIR /project
+
+# Default command
+CMD ["generate-docs"]

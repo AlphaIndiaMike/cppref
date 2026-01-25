@@ -1,0 +1,124 @@
+# =============================================================================
+# clang-uml Configuration
+# =============================================================================
+# Generates UML diagrams from C++ source code using Clang AST analysis.
+# Output: PlantUML files (.puml)
+# =============================================================================
+
+# Compilation database location
+compilation_database_dir: build
+
+# Output directory for generated diagrams
+output_directory: docs/uml
+
+# Diagrams to generate
+diagrams:
+
+  # ===========================================================================
+  # Class Diagram - Full Project Overview
+  # ===========================================================================
+  class_overview:
+    type: class
+    title: "Project Class Overview"
+    glob:
+      - include/*.h
+      - include/**/*.h
+      - src/*.cpp
+      - src/**/*.cpp
+    include:
+      namespaces:
+        - my_project
+    exclude:
+      namespaces:
+        - my_project::detail
+        - my_project::internal
+    generate_packages: true
+    package_type: namespace
+
+  # ===========================================================================
+  # Class Diagram - Per Namespace (Detailed)
+  # ===========================================================================
+  class_detailed:
+    type: class
+    title: "Detailed Class Diagram"
+    glob:
+      - include/*.h
+      - include/**/*.h
+    include:
+      namespaces:
+        - my_project
+    generate_packages: true
+    package_type: namespace
+    include_relations_also_as_members: true
+
+  # ===========================================================================
+  # Sequence Diagram - Main Flow
+  # ===========================================================================
+  sequence_main:
+    type: sequence
+    title: "Main Program Sequence"
+    glob:
+      - src/main.cpp
+    include:
+      namespaces:
+        - my_project
+    from:
+      - function: "main"
+
+  # ===========================================================================
+  # Sequence Diagram - Per Function (Template)
+  # ===========================================================================
+  # Duplicate and modify for specific functions you want to trace
+  sequence_calculator:
+    type: sequence
+    title: "Calculator Operations Sequence"
+    glob:
+      - src/Calculator.cpp
+      - include/Calculator.h
+    include:
+      namespaces:
+        - my_project
+    from:
+      - function: "my_project::Calculator::Add"
+      - function: "my_project::Calculator::Divide"
+    combine_free_functions_into_file_participants: true
+
+  # ===========================================================================
+  # Include Dependency Diagram
+  # ===========================================================================
+  include_dependencies:
+    type: include
+    title: "Include Dependencies"
+    glob:
+      - include/*.h
+      - include/**/*.h
+      - src/*.cpp
+      - src/**/*.cpp
+    include:
+      paths:
+        - include
+        - src
+    exclude:
+      paths:
+        - build
+        - docs
+        - test
+        - tests
+    generate_system_headers: false
+
+  # ===========================================================================
+  # Package Diagram - Architecture Overview
+  # ===========================================================================
+  package_overview:
+    type: package
+    title: "Package Overview"
+    glob:
+      - include/*.h
+      - include/**/*.h
+      - src/*.cpp
+      - src/**/*.cpp
+    include:
+      namespaces:
+        - my_project
+    package_type: namespace
+    generate_packages: true

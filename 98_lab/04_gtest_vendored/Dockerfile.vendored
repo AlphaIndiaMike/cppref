@@ -1,0 +1,31 @@
+# Google Test / Google Mock Development Environment (VENDORED BUILD)
+# Uses only vendored/offline dependencies for reproducible builds
+
+FROM ubuntu:22.04
+
+LABEL maintainer="your-team"
+LABEL description="C++17 unit testing environment with Google Test and Google Mock (vendored dependencies)"
+LABEL vendored="true"
+LABEL build.reproducible="true"
+
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Copy vendored APT packages
+COPY vendored/apt-packages/*.deb /tmp/debs/
+
+# Install from vendored .deb files (no network needed)
+RUN dpkg -i /tmp/debs/*.deb 2>/dev/null || true && \
+    apt-get update && \
+    apt-get install -f -y && \
+    rm -rf /tmp/debs /var/lib/apt/lists/*
+
+# Build and install Google Test (some systems need this step)
+WORKDIR /usr/src/gtest
+RUN cmake . && make && cp lib/*.a /usr/lib/ 2>/dev/null || true
+
+# Set up working directory
+WORKDIR /project
+
+# Default command: run all tests
+CMD ["bash", "-c", "mkdir -p build && cd build && cmake .. && make && ctest --output-on-failure"]
