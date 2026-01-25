@@ -1,0 +1,38 @@
+compilation_database_dir: build
+output_directory: docs/uml
+relative_to: .   # ← ADD THIS
+
+diagrams:
+  sequence_main:
+    type: sequence
+    glob:
+      - "src/*.c"
+    include:
+      paths:
+        - src
+        - include
+    combine_free_functions_into_file_participants: true
+    from:
+      - function: "main()"
+    plantuml:
+      before:
+        - "autonumber"
+        - "title Main Program Flow"
+
+  sequence_gpio:
+    type: sequence
+    glob:
+      - "src/gpio_driver.c"
+      - "include/gpio_driver.h"  # ← ADD header too
+    include:
+      paths:
+        - src
+        - include
+    combine_free_functions_into_file_participants: true
+    from:
+      - function: "gpio_init(const gpio_config_t *)"
+      - function: "gpio_toggle(uint8_t,uint8_t)"
+    plantuml:
+      before:
+        - "autonumber"
+        - "title GPIO Operations"

@@ -155,6 +155,8 @@ $RECYCLE.BIN/
 *_backup
 .ccls-cache/
 .clangd/
+vendored/
+docs/
 
 # Core dumps
 core
