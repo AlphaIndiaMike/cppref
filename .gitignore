@@ -37,5 +37,184 @@
 *.out
 *.app
 
-# debug information files
+# Debug information files
 *.dwo
+
+# ========================================
+# Build Directories
+# ========================================
+build/
+builds/
+Build/
+BUILD/
+bin/
+Bin/
+BIN/
+out/
+Out/
+OUT/
+target/
+dist/
+cmake-build-*/
+.cmake/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+Testing/
+
+# ========================================
+# IDE and Editor Directories (Ignore)
+# ========================================
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.sln.docstates
+*.VC.db
+*.VC.VC.opendb
+
+# JetBrains IDEs (CLion, etc.)
+.idea/
+*.iml
+*.iws
+cmake-build-*/
+
+# Eclipse
+.cproject
+.project
+.settings/
+
+# Xcode
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+DerivedData/
+
+# ========================================
+# macOS System Files (Ignore)
+# ========================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# ========================================
+# Windows System Files (Ignore)
+# ========================================
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+*.stackdump
+
+# Windows Installer files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# ========================================
+# Linux System Files
+# ========================================
+*~
+.directory
+.Trash-*
+.nfs*
+
+# ========================================
+# Temporary and Cache Files
+# ========================================
+*.tmp
+*.temp
+*.swp
+*.swo
+*.log
+*.bak
+*.cache
+*.autosave
+*_backup
+.ccls-cache/
+.clangd/
+
+# Core dumps
+core
+core.*
+vgcore.*
+
+# ========================================
+# Dependencies and Package Managers
+# ========================================
+# Conan
+conaninfo.txt
+conanbuildinfo.*
+conan.lock
+graph_info.json
+
+# vcpkg
+vcpkg_installed/
+
+# ========================================
+# Testing and Coverage
+# ========================================
+*.gcda
+*.gcno
+*.gcov
+*.coverage
+coverage/
+htmlcov/
+.pytest_cache/
+*.test
+
+# ========================================
+# Documentation Build Outputs
+# ========================================
+docs/_build/
+docs/html/
+docs/latex/
+Doxygen/
+doxygen_output/
+
+# ========================================
+# Project-Specific Hidden Files (KEEP THESE)
+# ========================================
+# These are explicitly NOT ignored:
+# .vscode/          - VSCode workspace settings
+# .clang-format     - Code formatting rules
+# .clang-tidy       - Static analysis config
+# .editorconfig     - Editor configuration
+# .gitignore        - This file
+# .gitattributes    - Git attributes
+# .dockerignore     - Docker ignore rules
+# .github/          - GitHub Actions, templates, etc.
+# .gitlab-ci.yml    - GitLab CI
+# .travis.yml       - Travis CI
+# .cmake-format     - CMake formatting
+# .pre-commit-config.yaml - Pre-commit hooks
+
+# ========================================
+# BUT Ignore These Specific Hidden Files
+# ========================================
+.env
+.env.local
+.env.*.local
+.history/

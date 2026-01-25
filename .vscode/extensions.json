@@ -1,0 +1,29 @@
+{
+    "recommendations": [
+        // ========== Essential (Install These First) ==========
+        "ms-vscode.cpptools", // C/C++ IntelliSense, debugging, code navigation
+        "ms-vscode.cmake-tools", // Build, configure, run CMake projects
+        "twxs.cmake", // CMakeLists.txt syntax highlighting
+        "ms-vscode.makefile-tools", // Makefile support (IntelliSense, build, debug)
+        "llvm-vs-code-extensions.vscode-clangd", // Better IntelliSense (faster, more accurate)
+        "ms-vscode.hexeditor", // Hex editor for binary files
+        // ========== Code Quality ==========
+        "xaver.clang-format", // Auto-format to Google Style
+        "jbenden.c-cpp-flylint", // Real-time static analysis
+        "usernamehw.errorlens", // Inline error/warning display
+        "sonarsource.sonarlint-vscode", // Code smell detection
+        // ========== Testing ==========
+        "hbenl.vscode-test-explorer", // Test sidebar
+        "matepek.vscode-catch2-test-adapter", // GTest/GMock integration
+        "ryanluker.vscode-coverage-gutters", // Show code coverage in editor
+        // ========== Docker & Remote ==========
+        "ms-azuretools.vscode-docker", // Manage containers
+        "ms-vscode-remote.remote-containers", // Develop inside Docker
+        // ========== Productivity ==========
+        "eamodio.gitlens", // Git blame, history, comparison
+        "gruntfuggly.todo-tree", // Track TODOs/FIXMEs
+        "cschlosser.doxdocgen" // Auto-generate doc comments
+    ],
+    // Optional: Extensions that should not be recommended (if they conflict)
+    "unwantedRecommendations": []
+}

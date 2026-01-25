@@ -1,0 +1,30 @@
+{
+    // Use clangd for IntelliSense (disable default)
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "clangd.arguments": [
+        "--background-index",
+        "--clang-tidy",
+        "--header-insertion=iwyu",
+        "--completion-style=detailed"
+    ],
+    // Format on save with Google style
+    "editor.formatOnSave": true,
+    "[cpp]": {
+        "editor.defaultFormatter": "xaver.clang-format"
+    },
+    "clang-format.style": "Google",
+    // CMake
+    "cmake.configureOnOpen": true,
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    // Editor
+    "editor.rulers": [
+        256
+    ],
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    // C++ specific
+    "files.associations": {
+        "*.h": "cpp",
+        "*.cc": "cpp"
+    }
+}
