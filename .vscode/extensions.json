@@ -8,9 +8,9 @@
         "ms-vscode.hexeditor", // Hex editor for binary files
         // ========== Code Quality ==========
         "xaver.clang-format", // Auto-format to Google Style
-        "jbenden.c-cpp-flylint", // Real-time static analysis
-        "usernamehw.errorlens", // Inline error/warning display
-        "sonarsource.sonarlint-vscode", // Code smell detection
+        //"jbenden.c-cpp-flylint", // Real-time static analysis
+        //"usernamehw.errorlens", // Inline error/warning display
+        //"sonarsource.sonarlint-vscode", // Code smell detection
         // ========== Testing ==========
         "hbenl.vscode-test-explorer", // Test sidebar
         "matepek.vscode-catch2-test-adapter", // GTest/GMock integration

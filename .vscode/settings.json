@@ -5,7 +5,8 @@
         "--background-index",
         "--clang-tidy",
         "--header-insertion=iwyu",
-        "--completion-style=detailed"
+        "--completion-style=detailed",
+        "--compile-commands-dir=${workspaceFolder}/build"
     ],
     // Format on save with Google style
     "editor.formatOnSave": true,
@@ -26,5 +27,13 @@
     "files.associations": {
         "*.h": "cpp",
         "*.cc": "cpp"
-    }
+    },
+    "C_Cpp.default.cppStandard": "c++17",
+    "C_Cpp.default.cStandard": "c17",
+    "C_Cpp.errorSquiggles": "enabled",
+    "files.exclude": {
+        "**/.git": true,
+        "**/build": false
+    },
+    "sonarlint.pathToCompileCommands": "${workspaceFolder}/build/compile_commands.json",
 }

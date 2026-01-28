@@ -43,7 +43,7 @@ endif()
 
 # Main library (code)
 add_library(${PROJECT_NAME}_lib
-
+    src/cli_shell.cc
 )
 
 target_include_directories(${PROJECT_NAME}_lib
@@ -53,6 +53,7 @@ target_include_directories(${PROJECT_NAME}_lib
 
 # Main executable (if applicable)
 add_executable(${PROJECT_NAME}
+    src/main.cc
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -73,7 +74,7 @@ if(ENABLE_TESTING)
 
     # Test executable
     add_executable(${PROJECT_NAME}_tests
-
+        test/cli_shell_test.cc
         # Add more test files here
     )
 

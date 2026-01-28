@@ -3,7 +3,7 @@
 
 set -e
 
-VENDOR_DIR="90_vendored"
+VENDOR_DIR="vendored"
 ERRORS=0
 WARNINGS=0
 

@@ -4,7 +4,7 @@
 
 set -e
 
-VENDOR_DIR="$(pwd)/90_vendored"
+VENDOR_DIR="$(pwd)/vendored"
 
 echo "================================================"
 echo "  Vendoring Dependencies"
