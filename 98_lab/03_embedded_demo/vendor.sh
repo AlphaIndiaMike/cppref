@@ -26,7 +26,7 @@ mkdir -p "$VENDOR_DIR"/{base-image,plantuml,ruby-gems,apt-packages}
 
 # ===== 1. PlantUML JAR =====
 echo "[1/5] Vendoring PlantUML..."
-PLANTUML_VERSION="1.2024.0"
+PLANTUML_VERSION="1.2026.1"
 PLANTUML_URL="https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/plantuml-${PLANTUML_VERSION}.jar"
 PLANTUML_FILE="$VENDOR_DIR/plantuml/plantuml-${PLANTUML_VERSION}.jar"
 
@@ -74,7 +74,7 @@ else
 
     $DOCKER_CMD exec "$TMP_CONTAINER" bash -c "
         apt-get update && apt-get install -y ruby-full wget
-        gem install --no-document ceedling -v 0.31.1
+        gem install --no-document ceedling -v 1.0.1
     "
 
     # Copy gem cache

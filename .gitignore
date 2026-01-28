@@ -156,6 +156,7 @@ $RECYCLE.BIN/
 .ccls-cache/
 .clangd/
 vendored/
+90_vendored/
 docs/
 
 # Core dumps
