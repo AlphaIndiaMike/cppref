@@ -2,5 +2,6 @@
 
 int main() {
   presenter::CliShell shell;
+
   return shell.Run();
 }

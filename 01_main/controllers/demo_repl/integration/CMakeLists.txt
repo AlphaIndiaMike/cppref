@@ -1,15 +1,21 @@
-set(COMPONENT_NAME "cli_shell")
+set(COMPONENT_NAME "demo_repl")
 
 #[[-----------------------------------
-CLI Shell Component
+Demo Controller REPL
 -------------------------------------]]
 message("  → ${COMPONENT_NAME} ")
 
-add_library(cli_shell_lib STATIC
-    ../src/cli_shell.cc
+add_library(${COMPONENT_NAME}_lib STATIC
+    #../src/${COMPONENT_NAME}.c
+    ../src/demo_controller.cc
 )
 
-target_include_directories(cli_shell_lib PUBLIC
+# Link to cli_shell_lib to access its PUBLIC include directories
+target_link_libraries(${COMPONENT_NAME}_lib PUBLIC
+    cli_shell_lib
+)
+
+target_include_directories(${COMPONENT_NAME}_lib PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/../inc
 )
 
