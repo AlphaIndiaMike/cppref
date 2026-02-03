@@ -1100,6 +1100,74 @@ TEST_F(SqliteDatabaseTest, BulkInsertPerformance) {
   EXPECT_EQ(std::get<int64_t>(result[0][0]), 10000);
 }
 
+// ============================================================
+// Coverage: Error Paths
+// ============================================================
+TEST_F(SqliteDatabaseTest, StatementExecuteWithReturningError) {
+  // Line 106: checkError in execute() when step returns error
+  // INSERT with RETURNING where the statement itself causes error
+  SqliteDatabase db(test_db_path_.string());
+  db.execute("CREATE TABLE test (id INTEGER PRIMARY KEY)");
+  db.execute("INSERT INTO test VALUES (1)");
+
+  // PK violation during INSERT with RETURNING calls execute()
+  auto stmt = db.prepare("INSERT INTO test VALUES (1) RETURNING *");
+  EXPECT_THROW(stmt->execute(), QueryException);
+}
+
+TEST_F(SqliteDatabaseTest, DatabaseBusyError) {
+  // Test SQLITE_BUSY error path
+  SqliteDatabase db1(test_db_path_.string());
+  db1.setJournalMode("DELETE");
+  db1.execute("CREATE TABLE test (id INTEGER PRIMARY KEY)");
+  db1.execute("INSERT INTO test VALUES (1), (2), (3)");
+
+  db1.beginTransaction();
+  db1.execute("INSERT INTO test VALUES (4)");
+
+  SqliteDatabase db2(test_db_path_.string());
+  db2.execute("PRAGMA busy_timeout = 0");
+
+  EXPECT_THROW(db2.execute("INSERT INTO test VALUES (5)"), QueryException);
+
+  db1.rollback();
+}
+
+TEST_F(SqliteDatabaseTest, ExecuteBatchConstraintViolation) {
+  // Line 146: checkError in executeBatch() when a batch item fails
+  SqliteDatabase db(test_db_path_.string());
+  db.execute("CREATE TABLE test (id INTEGER PRIMARY KEY, value TEXT UNIQUE)");
+
+  auto stmt = db.prepare("INSERT INTO test (value) VALUES (?)");
+  auto* sqliteStmt = dynamic_cast<SqliteStatement*>(stmt.get());
+
+  std::vector<std::vector<DbValue>> params = {
+      {std::string("first")},
+      {std::string("second")},
+      {std::string("first")},  // Duplicate - will fail
+  };
+
+  EXPECT_THROW(sqliteStmt->executeBatch(params), QueryException);
+}
+
+TEST_F(SqliteDatabaseTest, TransactionScopeRollbackThrows) {
+  // Line 205: catch(...) in TransactionScope destructor
+  SqliteDatabase db(test_db_path_.string());
+  db.execute("CREATE TABLE test (id INTEGER)");
+
+  {
+    auto txn = db.transaction();
+    db.execute("INSERT INTO test VALUES (1)");
+    // Close database before txn destructor runs - rollback will fail
+    db.close();
+    // Destructor should catch the exception and not propagate
+  }
+
+  // Reopen and verify no exception escaped the destructor
+  db.open(test_db_path_.string());
+  EXPECT_TRUE(db.isOpen());
+}
+
 }  // namespace
 }  // namespace Gateways::Database
 
