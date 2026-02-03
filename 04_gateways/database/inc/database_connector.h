@@ -1,8 +1,8 @@
-#pragma once
+#ifndef GATEWAYS_DATABASE_DATABASE_CONNECTOR_H_
+#define GATEWAYS_DATABASE_DATABASE_CONNECTOR_H_
 
-#include <functional>
+#include <cstdint>
 #include <memory>
-#include <optional>
 #include <stdexcept>
 #include <string>
 #include <variant>
@@ -11,111 +11,88 @@
 namespace Gateways::Database {
 
 // ============================================================
-// Database value types
+// Type Definitions
 // ============================================================
-using DbValue = std::variant<std::nullptr_t, int64_t, double, std::string,
-                             std::vector<uint8_t>  // BLOB
-                             >;
 
+using DbValue = std::variant<std::nullptr_t, int64_t, double, std::string,
+                             std::vector<uint8_t>>;
 using DbRow = std::vector<DbValue>;
 using DbResult = std::vector<DbRow>;
 
 // ============================================================
-// Database exceptions
+// Exceptions
 // ============================================================
+
 class DatabaseException : public std::runtime_error {
  public:
-  explicit DatabaseException(const std::string& message)
-      : std::runtime_error(message) {}
+  explicit DatabaseException(const std::string& msg)
+      : std::runtime_error(msg) {}
 };
 
 class ConnectionException : public DatabaseException {
  public:
-  explicit ConnectionException(const std::string& message)
-      : DatabaseException("Connection error: " + message) {}
+  explicit ConnectionException(const std::string& msg)
+      : DatabaseException("Connection error: " + msg) {}
 };
 
 class QueryException : public DatabaseException {
  public:
-  explicit QueryException(const std::string& message)
-      : DatabaseException("Query error: " + message) {}
+  explicit QueryException(const std::string& msg)
+      : DatabaseException("Query error: " + msg) {}
 };
 
 // ============================================================
-// Prepared statement interface
+// IStatement Interface
 // ============================================================
+
 class IStatement {
  public:
   virtual ~IStatement() = default;
 
+  // Bind parameters (1-based index)
   virtual IStatement& bind(int index, std::nullptr_t) = 0;
   virtual IStatement& bind(int index, int64_t value) = 0;
   virtual IStatement& bind(int index, double value) = 0;
   virtual IStatement& bind(int index, const std::string& value) = 0;
   virtual IStatement& bind(int index, const std::vector<uint8_t>& blob) = 0;
 
+  // Execution
   virtual DbResult execute() = 0;
-  virtual int64_t executeInsert() = 0;  // Returns last insert rowid
-  virtual int executeUpdate() = 0;      // Returns rows affected
-
+  virtual int64_t executeInsert() = 0;
+  virtual int executeUpdate() = 0;
   virtual void reset() = 0;
 };
 
 // ============================================================
-// Database interface
+// IDatabase Interface
 // ============================================================
+
 class IDatabase {
  public:
   virtual ~IDatabase() = default;
 
+  // Connection management
   virtual void open(const std::string& path) = 0;
   virtual void close() = 0;
   virtual bool isOpen() const = 0;
 
+  // Statement preparation
   virtual std::unique_ptr<IStatement> prepare(const std::string& sql) = 0;
 
+  // Direct execution
   virtual void execute(const std::string& sql) = 0;
   virtual DbResult query(const std::string& sql) = 0;
 
+  // Transaction control
   virtual void beginTransaction() = 0;
   virtual void commit() = 0;
   virtual void rollback() = 0;
 
+  // Metadata
   virtual int64_t lastInsertRowId() const = 0;
   virtual int changesCount() const = 0;
 };
 
-// ============================================================
-// RAII Transaction guard
-// ============================================================
-class Transaction {
- public:
-  explicit Transaction(IDatabase& db) : m_db(db), m_committed(false) {
-    m_db.beginTransaction();
-  }
-
-  ~Transaction() {
-    if (!m_committed) {
-      try {
-        m_db.rollback();
-      } catch (...) {
-        // Suppress exceptions in destructor
-      }
-    }
-  }
-
-  void commit() {
-    m_db.commit();
-    m_committed = true;
-  }
-
-  // Non-copyable, non-movable
-  Transaction(const Transaction&) = delete;
-  Transaction& operator=(const Transaction&) = delete;
-
- private:
-  IDatabase& m_db;
-  bool m_committed;
-};
-
 }  // namespace Gateways::Database
+
+#endif  // GATEWAYS_DATABASE_DATABASE_CONNECTOR_H_

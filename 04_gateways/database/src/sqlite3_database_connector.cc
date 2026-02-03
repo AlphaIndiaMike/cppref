@@ -1,5 +1,6 @@
 #include "sqlite3_database_connector.h"
 
+#include <sstream>
 #include <utility>
 
 namespace Gateways::Database {
@@ -66,6 +67,25 @@ IStatement& SqliteStatement::bind(int index, const std::vector<uint8_t>& blob) {
   return *this;
 }
 
+void SqliteStatement::bindValue(int index, const DbValue& value) {
+  std::visit(
+      [this, index](auto&& arg) {
+        using T = std::decay_t<decltype(arg)>;
+        if constexpr (std::is_same_v<T, std::nullptr_t>) {
+          bind(index, nullptr);
+        } else if constexpr (std::is_same_v<T, int64_t>) {
+          bind(index, arg);
+        } else if constexpr (std::is_same_v<T, double>) {
+          bind(index, arg);
+        } else if constexpr (std::is_same_v<T, std::string>) {
+          bind(index, arg);
+        } else if constexpr (std::is_same_v<T, std::vector<uint8_t>>) {
+          bind(index, arg);
+        }
+      },
+      value);
+}
+
 DbResult SqliteStatement::execute() {
   DbResult results;
   int columnCount = sqlite3_column_count(m_stmt);
@@ -110,6 +130,28 @@ void SqliteStatement::reset() {
   sqlite3_clear_bindings(m_stmt);
 }
 
+int SqliteStatement::executeBatch(
+    const std::vector<std::vector<DbValue>>& paramSets) {
+  int totalChanges = 0;
+
+  for (const auto& params : paramSets) {
+    reset();
+
+    for (size_t i = 0; i < params.size(); ++i) {
+      bindValue(static_cast<int>(i + 1), params[i]);
+    }
+
+    int result = sqlite3_step(m_stmt);
+    if (result != SQLITE_DONE) {
+      checkError(result, "executeBatch");
+    }
+
+    totalChanges += sqlite3_changes(m_db);
+  }
+
+  return totalChanges;
+}
+
 void SqliteStatement::checkError(int result, const std::string& context) {
   if (result != SQLITE_OK && result != SQLITE_ROW && result != SQLITE_DONE) {
     throw QueryException(context + ": " + sqlite3_errmsg(m_db));
@@ -145,6 +187,35 @@ DbValue SqliteStatement::extractColumn(int col) {
     default:
       return nullptr;
   }
+}
+
+// ============================================================
+// TransactionScope Implementation
+// ============================================================
+
+TransactionScope::TransactionScope(SqliteDatabase& db)
+    : m_db(db), m_finished(false) {
+  m_db.beginTransaction();
+}
+
+TransactionScope::~TransactionScope() {
+  if (!m_finished) {
+    try {
+      m_db.rollback();
+    } catch (...) {
+      // Suppress exceptions in destructor
+    }
+  }
+}
+
+void TransactionScope::commit() {
+  m_db.commit();
+  m_finished = true;
+}
+
+void TransactionScope::rollback() {
+  m_db.rollback();
+  m_finished = true;
 }
 
 // ============================================================
@@ -184,7 +255,6 @@ void SqliteDatabase::open(const std::string& path) {
     throw ConnectionException(error);
   }
 
-  // Enable foreign keys by default
   enableForeignKeys(true);
 }
 
@@ -230,6 +300,10 @@ void SqliteDatabase::commit() { execute("COMMIT"); }
 
 void SqliteDatabase::rollback() { execute("ROLLBACK"); }
 
+TransactionScope SqliteDatabase::transaction() {
+  return TransactionScope(*this);
+}
+
 int64_t SqliteDatabase::lastInsertRowId() const {
   return m_db ? sqlite3_last_insert_rowid(m_db) : 0;
 }
@@ -244,6 +318,85 @@ void SqliteDatabase::enableForeignKeys(bool enable) {
 
 void SqliteDatabase::setJournalMode(const std::string& mode) {
   execute("PRAGMA journal_mode = " + mode);
+}
+
+int SqliteDatabase::bulkInsert(const std::string& table,
+                               const std::vector<std::string>& columns,
+                               const std::vector<std::vector<DbValue>>& rows) {
+  if (rows.empty()) {
+    return 0;
+  }
+
+  // Build: INSERT INTO table (c1, c2, ...) VALUES (?, ?, ...)
+  std::ostringstream sql;
+  sql << "INSERT INTO " << table << " (";
+
+  for (size_t i = 0; i < columns.size(); ++i) {
+    if (i > 0) sql << ", ";
+    sql << columns[i];
+  }
+
+  sql << ") VALUES (";
+
+  for (size_t i = 0; i < columns.size(); ++i) {
+    if (i > 0) sql << ", ";
+    sql << "?";
+  }
+  sql << ")";
+
+  auto stmt = prepare(sql.str());
+  auto* sqliteStmt = dynamic_cast<SqliteStatement*>(stmt.get());
+
+  auto txn = transaction();
+  int totalInserted = sqliteStmt->executeBatch(rows);
+  txn.commit();
+
+  return totalInserted;
+}
+
+int SqliteDatabase::bulkExecute(
+    const std::string& sql,
+    const std::vector<std::vector<DbValue>>& paramSets) {
+  if (paramSets.empty()) {
+    return 0;
+  }
+
+  auto stmt = prepare(sql);
+  auto* sqliteStmt = dynamic_cast<SqliteStatement*>(stmt.get());
+
+  auto txn = transaction();
+  int totalAffected = sqliteStmt->executeBatch(paramSets);
+  txn.commit();
+
+  return totalAffected;
+}
+
+DbResult SqliteDatabase::bulkSelect(
+    const std::string& sql,
+    const std::vector<std::vector<DbValue>>& paramSets) {
+  if (paramSets.empty()) {
+    return {};
+  }
+
+  auto stmt = prepare(sql);
+  auto* sqliteStmt = dynamic_cast<SqliteStatement*>(stmt.get());
+
+  DbResult combinedResults;
+
+  for (const auto& params : paramSets) {
+    stmt->reset();
+
+    for (size_t i = 0; i < params.size(); ++i) {
+      sqliteStmt->bindValue(static_cast<int>(i + 1), params[i]);
+    }
+
+    DbResult rows = stmt->execute();
+    combinedResults.insert(combinedResults.end(),
+                           std::make_move_iterator(rows.begin()),
+                           std::make_move_iterator(rows.end()));
+  }
+
+  return combinedResults;
 }
 
 }  // namespace Gateways::Database
