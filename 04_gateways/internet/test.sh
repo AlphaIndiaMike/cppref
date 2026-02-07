@@ -12,33 +12,30 @@ IMAGE_NAME="gtest-dev:latest"
 # Configuration
 # -----------------------------------------------------------------------------
 
-# Resolve absolute path for source to prevent relative path errors
-# Assumption: 'vendored' is 2 levels up from this script location
-SOURCE_DB_PATH="${SCRIPT_DIR}/../../90_vendored/database/sqlite3"
+SOURCE_HTTPLIB_PATH="${SCRIPT_DIR}/../../90_vendored/network/httplib"
 
 # Destination relative to where the script is executed (CWD)
 # This matches the Docker volume mount logic (-v $(pwd):/project)
 DEST_PARENT_DIR="./integration"
-DEST_DB_PATH="${DEST_PARENT_DIR}/sqlite3"
+DEST_DB_PATH="${DEST_PARENT_DIR}/httplib"
 
 # -----------------------------------------------------------------------------
 # Setup & Cleanup
 # -----------------------------------------------------------------------------
 
 # 1. Validation: Ensure source exists
-if [[ ! -d "${SOURCE_DB_PATH}" ]]; then
-    echo "Error: Source database not found at: ${SOURCE_DB_PATH}"
+if [[ ! -d "${SOURCE_HTTPLIB_PATH}" ]]; then
+    echo "Error: Source dependencies not found at: ${SOURCE_HTTPLIB_PATH}"
     exit 1
 fi
 
 # 2. Setup: Copy folder
-echo "📂 Copying database to integration folder..."
-cp -r "${SOURCE_DB_PATH}" "${DEST_PARENT_DIR}/"
+echo "📂 Copying dependencies to integration folder..."
+cp -r "${SOURCE_HTTPLIB_PATH}" "${DEST_PARENT_DIR}/"
 
 # 3. Cleanup: Define function to remove the folder on exit
 cleanup() {
     echo "🧹 Cleaning up integration artifacts..."
-    # Only remove the specific 'database' folder we copied, not the whole integration dir
     rm -rf "${DEST_DB_PATH}"
 }
 

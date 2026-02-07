@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(sqlite3_connector VERSION 1.0.0 LANGUAGES C CXX)
+project(sqlite3_repo VERSION 1.0.0 LANGUAGES C CXX)
 
 # ============================================================================
 # Project Settings
@@ -38,59 +38,20 @@ if(ENABLE_COVERAGE)
 endif()
 
 # ============================================================================
-# SQLite3 Library (from source)
-# ============================================================================
-
-add_library(sqlite3
-    ${CMAKE_CURRENT_SOURCE_DIR}/integration/sqlite3/sqlite3.c
-)
-
-target_include_directories(sqlite3
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/integration/sqlite3
-)
-
-# SQLite3 compile definitions for common features
-target_compile_definitions(sqlite3
-    PRIVATE
-        SQLITE_ENABLE_FTS5
-        SQLITE_ENABLE_JSON1
-        SQLITE_ENABLE_RTREE
-        SQLITE_THREADSAFE=1
-)
-
-# SQLite3 requires pthread and dl on Unix systems
-if(UNIX)
-    find_package(Threads REQUIRED)
-    target_link_libraries(sqlite3
-        PUBLIC
-            Threads::Threads
-            ${CMAKE_DL_LIBS}
-    )
-endif()
-
-# Suppress warnings for SQLite3 (third-party code)
-if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(sqlite3 PRIVATE -w)
-endif()
-
-# ============================================================================
 # Source Files
 # ============================================================================
 
 # Main library (code)
 add_library(${PROJECT_NAME}_lib
-    src/sqlite3_database_connector.cc
-)
-
-target_link_libraries(${PROJECT_NAME}_lib
-    PUBLIC
-        sqlite3
+    src/network_data_repository.cc
+    integration/httplib_network_connector.cc
 )
 
 target_include_directories(${PROJECT_NAME}_lib
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/integration/sqlite3
+        ${CMAKE_CURRENT_SOURCE_DIR}/integration/network/httplib
+        ${CMAKE_CURRENT_SOURCE_DIR}/integration/network/nlohmann
+        ${CMAKE_CURRENT_SOURCE_DIR}/integration
         ${CMAKE_CURRENT_SOURCE_DIR}/inc
 )
 
@@ -98,6 +59,8 @@ target_include_directories(${PROJECT_NAME}_lib
 add_executable(${PROJECT_NAME}
     src/main.cc
 )
+
+add_compile_definitions(UNIT_TEST=1)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
@@ -117,7 +80,7 @@ if(ENABLE_TESTING)
 
     # Test executable
     add_executable(${PROJECT_NAME}_tests
-        test/sqlite3_database_test.cc
+        test/http_request_test.cc
         # Add more test files here
     )
 

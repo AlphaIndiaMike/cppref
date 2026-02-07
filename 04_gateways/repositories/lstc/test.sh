@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# coverage.sh - Run tests with code coverage report
+# test.sh - Build and run all tests
 # =============================================================================
 
 set -e
@@ -11,35 +11,45 @@ IMAGE_NAME="gtest-dev:latest"
 # -----------------------------------------------------------------------------
 # Configuration
 # -----------------------------------------------------------------------------
-
-# Resolve absolute path for source to prevent relative path errors
-# Assumption: 'vendored' is 2 levels up from this script location
-SOURCE_DB_PATH="${SCRIPT_DIR}/../../90_vendored/database/sqlite3"
+SOURCE_NET_PATH="${SCRIPT_DIR}/../../../90_vendored/network/"
 
 # Destination relative to where the script is executed (CWD)
 # This matches the Docker volume mount logic (-v $(pwd):/project)
 DEST_PARENT_DIR="./integration"
-DEST_DB_PATH="${DEST_PARENT_DIR}/sqlite3"
+DEST_NET_PATH="${DEST_PARENT_DIR}/network"
+
+# Resolve absolute path for Interface Contracts
+I_HPP_PATH="${SCRIPT_DIR}/../../internet/inc/network_connector.h"
+C_HPP_PATH="${SCRIPT_DIR}/../../internet/inc/httplib_network_connector.h"
+C_CPP_PATH="${SCRIPT_DIR}/../../internet/src/httplib_network_connector.cc"
 
 # -----------------------------------------------------------------------------
 # Setup & Cleanup
 # -----------------------------------------------------------------------------
 
 # 1. Validation: Ensure source exists
-if [[ ! -d "${SOURCE_DB_PATH}" ]]; then
-    echo "Error: Source database not found at: ${SOURCE_DB_PATH}"
+if [[ ! -d "${SOURCE_NET_PATH}" ]]; then
+    echo "Error: Source deps not found at: ${SOURCE_NET_PATH}"
     exit 1
 fi
 
-# 2. Setup: Copy folder
-echo "📂 Copying database to integration folder..."
-cp -r "${SOURCE_DB_PATH}" "${DEST_PARENT_DIR}/"
+# 2.a Setup: Copy folder
+echo "📂 Copying deps to integration folder..."
+cp -r "${SOURCE_NET_PATH}" "${DEST_PARENT_DIR}/"
+
+# 2.b Setup: Copy interface contracts
+echo "📂 Copying required header files..."
+cp -r "${I_HPP_PATH}" "${DEST_PARENT_DIR}/"
+cp -r "${C_HPP_PATH}" "${DEST_PARENT_DIR}/"
+cp -r "${C_CPP_PATH}" "${DEST_PARENT_DIR}/"
 
 # 3. Cleanup: Define function to remove the folder on exit
 cleanup() {
     echo "🧹 Cleaning up integration artifacts..."
-    # Only remove the specific 'database' folder we copied, not the whole integration dir
-    rm -rf "${DEST_DB_PATH}"
+    rm -rf "${DEST_NET_PATH}"
+    rm -rf "${DEST_PARENT_DIR}/network_connector.h"
+    rm -rf "${DEST_PARENT_DIR}/httplib_network_connector.h"
+    rm -rf "${DEST_PARENT_DIR}/httplib_network_connector.cc"
 }
 
 # Register the trap to run on EXIT (happens on success, error, or interrupt)
@@ -55,7 +65,7 @@ if [[ "$(docker images -q ${IMAGE_NAME} 2> /dev/null)" == "" ]]; then
     "${SCRIPT_DIR}/build.sh"
 fi
 
-echo "Running tests with coverage..."
+echo "Running tests..."
 docker run --rm \
     -v "$(pwd):/project" \
     -w /project \
@@ -63,17 +73,7 @@ docker run --rm \
     bash -c "
         mkdir -p build &&
         cd build &&
-        cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON .. &&
+        cmake .. &&
         make -j\$(nproc) &&
-        ctest --output-on-failure &&
-        gcovr -r .. \
-            --html --html-details -o coverage.html \
-            --filter '../src/' \
-            --exclude '.*/main\.cc' \
-            --exclude '.*/test/.*' \
-            --exclude-throw-branches \
-            --exclude-unreachable-branches
+        ctest --output-on-failure
     "
-
-echo ""
-echo "Coverage report: $(pwd)/build/coverage.html"
